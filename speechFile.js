@@ -16,6 +16,14 @@ if (!("webkitSpeechRecognition" in window)) {
     }
   });
 
+  // Füge diesen Teil direkt unter deinen anderen Event Listeners ein
+  window.addEventListener("blur", function () {
+    if (isRecording) {
+      stopSpeechRecognition();
+      console.log("Spracherkennung wurde wegen Fensterwechsel abgebrochen.");
+    }
+  });
+
   let lastResultIndex = 0; // Hält den Index des zuletzt verarbeiteten Ergebnisses fest
 
   function startSpeechRecognition() {
@@ -85,7 +93,8 @@ if (!("webkitSpeechRecognition" in window)) {
       const trimmedText = text.replace(/[.!?]$/, "");
 
       // Überprüfe, ob vor der Einfügestelle ein Leerzeichen oder der Anfang des Feldes ist
-      const spaceBefore = startPos === 0 || beforeText.endsWith(" ") ? "" : " ";
+      // const spaceBefore = startPos === 0 || beforeText.endsWith(" ") || beforeText.endsWith("\n") || beforeText.endsWith("\r") ? "" : " ";
+      const spaceBefore = startPos === 0 || /[\s\r\n]$/.test(beforeText) ? "" : " ";
 
       // Füge den bereinigten Text an der Cursorposition ein, mit einem Leerzeichen davor, falls nötig
       activeElement.value = beforeText + spaceBefore + trimmedText + afterText;
